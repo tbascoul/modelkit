@@ -1,3 +1,4 @@
+import inspect
 from pydantic import BaseModel
 from rich.markup import escape
 from rich.tree import Tree
@@ -13,17 +14,25 @@ def pretty_print_type(typ):
         s += "\n" + car_to
         return s
 
-    # For simple lists
+    # For simple types
     if type(typ) is type:
         return escape(typ.__name__)
 
-    # For list types
+    # For lists
     if type(typ) is list:
         return print_list([pretty_print_type(x) for x in typ], "[", "]")
 
-    # For tuples types
+    # For tuples
     if type(typ) is tuple:
         return print_list([pretty_print_type(x) for x in typ], "(", ")")
+
+    # For dicts
+    if type(typ) is dict:
+        return print_list(
+            [f"{key}: " + pretty_print_type(item) for key, item in typ.items()],
+            "{",
+            "}",
+        )
 
     # For typing types
     if type(typ) is typing._GenericAlias:
@@ -37,7 +46,7 @@ def pretty_print_type(typ):
         return s
 
     # For pydantic classes
-    if issubclass(typ, BaseModel):
+    if inspect.isclass(typ) and issubclass(typ, BaseModel):
         return typ.schema_json(indent=2, by_alias=True)
 
     return escape(str(typ))
