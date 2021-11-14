@@ -1,23 +1,44 @@
+from pydantic import BaseModel
 from rich.markup import escape
 from rich.tree import Tree
+from typing import Dict, List, Optional, Tuple, Union, _GenericAlias
+from textwrap import indent
 
 
 def pretty_print_type(typ):
-    try:
-        # For typing types
+    def print_list(my_list, car_from, car_to):
+        s = car_from + "\n"
+        s += indent(",\n".join(my_list), " " * 2)
+        s += "\n" + car_to
+        return s
+
+    # For simple lists
+    if type(typ) is type:
+        return escape(typ.__name__)
+
+    # For list types
+    if type(typ) is list:
+        return print_list([pretty_print_type(x) for x in typ], "[", "]")
+
+    # For tuples types
+    if type(typ) is tuple:
+        return print_list([pretty_print_type(x) for x in typ], "(", ")")
+
+    # For typing types
+    if type(typ) is _GenericAlias:
         s = typ._name
         if typ.__args__:
-            s += "["
-            s += ",".join(pretty_print_type(x) for x in typ.__args__)
-            s += "]"
-        return escape(s)
-    except (AttributeError, TypeError):
-        pass
-    try:
-        # For classes
-        return escape(typ.__name__)
-    except AttributeError:
-        pass
+            a = [pretty_print_type(x) for x in typ.__args__]
+            if s:
+                s += print_list(a, "[", "]")
+            else:
+                s = print_list(a, "(", ")")
+        return s
+
+    # For pydantic classes
+    if issubclass(typ, BaseModel):
+        return typ.schema_json(indent=2, by_alias=True)
+
     return escape(str(typ))
 
 
