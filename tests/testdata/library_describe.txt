@@ -1,7 +1,52 @@
 Settings                                                                        
 ├── lazy_loading : bool = False                                                 
 ├── enable_validation : bool = True                                             
-├── tf_serving : TFServingSettings                                              
+├── tf_serving : {                                                              
+│     "title": "TFServingSettings",                                             
+│     "description": "Base class for settings, allowing values to be overridden 
+│   by environment variables.\n\nThis is useful in production for secrets you do
+│   not wish to save in code, it plays nicely with docker(-compose),\nHeroku and
+│   any 12 factor app design.",                                                 
+│     "type": "object",                                                         
+│     "properties": {                                                           
+│       "enable": {                                                             
+│         "title": "Enable",                                                    
+│         "default": false,                                                     
+│         "env": "MODELKIT_TF_SERVING_ENABLE",                                  
+│         "env_names": [                                                        
+│           "modelkit_tf_serving_enable"                                        
+│         ],                                                                    
+│         "type": "boolean"                                                     
+│       },                                                                      
+│       "mode": {                                                               
+│         "title": "Mode",                                                      
+│         "default": "rest",                                                    
+│         "env": "MODELKIT_TF_SERVING_MODE",                                    
+│         "env_names": [                                                        
+│           "modelkit_tf_serving_mode"                                          
+│         ],                                                                    
+│         "type": "string"                                                      
+│       },                                                                      
+│       "host": {                                                               
+│         "title": "Host",                                                      
+│         "default": "localhost",                                               
+│         "env": "MODELKIT_TF_SERVING_HOST",                                    
+│         "env_names": [                                                        
+│           "modelkit_tf_serving_host"                                          
+│         ],                                                                    
+│         "type": "string"                                                      
+│       },                                                                      
+│       "port": {                                                               
+│         "title": "Port",                                                      
+│         "env": "MODELKIT_TF_SERVING_PORT",                                    
+│         "env_names": [                                                        
+│           "modelkit_tf_serving_port"                                          
+│         ],                                                                    
+│         "type": "integer"                                                     
+│       }                                                                       
+│     },                                                                        
+│     "additionalProperties": false                                             
+│   }                                                                           
 │   ├── enable : bool = False                                                   
 │   ├── mode : str = 'rest'                                                     
 │   ├── host : str = 'localhost'                                                
@@ -35,7 +80,31 @@ Models
     ├── doc: More complex                                                       
     │                                                                           
     │           With **a lot** of documentation                                 
-    ├── signature: ItemModel -> ResultModel                                     
+    ├── signature: {                                                            
+    │     "title": "ItemModel",                                                 
+    │     "type": "object",                                                     
+    │     "properties": {                                                       
+    │       "string": {                                                         
+    │         "title": "String",                                                
+    │         "type": "string"                                                  
+    │       }                                                                   
+    │     },                                                                    
+    │     "required": [                                                         
+    │       "string"                                                            
+    │     ]                                                                     
+    │   } -> {                                                                  
+    │     "title": "ResultModel",                                               
+    │     "type": "object",                                                     
+    │     "properties": {                                                       
+    │       "sorted": {                                                         
+    │         "title": "Sorted",                                                
+    │         "type": "string"                                                  
+    │       }                                                                   
+    │     },                                                                    
+    │     "required": [                                                         
+    │       "sorted"                                                            
+    │     ]                                                                     
+    │   }                                                                       
     ├── dependencies                                                            
     │   └── some_model_a                                                        
     ├── batch size: 128                                                         

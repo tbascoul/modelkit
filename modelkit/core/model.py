@@ -289,9 +289,9 @@ class AbstractModel(Asset, Generic[ItemType, ReturnType]):
 
         if self._item_type and self._return_type:
             sub_t = t.add(
-                f"[deep_sky_blue1]signature[/deep_sky_blue1]: " + "\n"
-                f"[orange3]{pretty_print_type(self._item_type)}[/orange3] \n->\n"
-                f" [orange3]{pretty_print_type(self._return_type)}"
+                f"[deep_sky_blue1]signature[/deep_sky_blue1]: "
+                f"{pretty_print_type(self._item_type)} ->"
+                f" {pretty_print_type(self._return_type)}"
             )
 
         if self._load_time:

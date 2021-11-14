@@ -8,11 +8,14 @@ from textwrap import indent
 
 
 def pretty_print_type(typ):
-    def print_list(my_list, car_from, car_to):
-        s = car_from + "\n"
-        s += indent(",\n".join(my_list), " " * 2)
-        s += "\n" + car_to
-        return s
+    def print_list(my_list, car_from, car_to, max_car_in_line=50):
+        inline_s = car_from + ",".join(my_list) + car_to
+        if len(inline_s) <= max_car_in_line:
+            return escape(inline_s)
+        multiline_s = car_from + "\n"
+        multiline_s += indent(",\n".join(my_list), " " * 2)
+        multiline_s += "\n" + car_to
+        return escape(multiline_s)
 
     # For simple types
     if type(typ) is type:
@@ -36,7 +39,7 @@ def pretty_print_type(typ):
 
     # For typing types
     if type(typ) is typing._GenericAlias:
-        s = typ._name
+        s = escape(typ._name)
         if typ.__args__:
             a = [pretty_print_type(x) for x in typ.__args__]
             if s:
@@ -47,7 +50,7 @@ def pretty_print_type(typ):
 
     # For pydantic classes
     if inspect.isclass(typ) and issubclass(typ, BaseModel):
-        return typ.schema_json(indent=2, by_alias=True)
+        return escape(typ.schema_json(indent=2, by_alias=True))
 
     return escape(str(typ))
 
