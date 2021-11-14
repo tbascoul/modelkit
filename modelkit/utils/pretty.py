@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from rich.markup import escape
 from rich.tree import Tree
-from typing import Dict, List, Optional, Tuple, Union, _GenericAlias
+import typing
+from typing import Dict, List, Optional, Tuple, Union
 from textwrap import indent
 
 
@@ -25,7 +26,7 @@ def pretty_print_type(typ):
         return print_list([pretty_print_type(x) for x in typ], "(", ")")
 
     # For typing types
-    if type(typ) is _GenericAlias:
+    if type(typ) is typing._GenericAlias:
         s = typ._name
         if typ.__args__:
             a = [pretty_print_type(x) for x in typ.__args__]
