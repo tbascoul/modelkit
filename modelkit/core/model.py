@@ -305,6 +305,37 @@ class AbstractModel(Asset, Generic[ItemType, ReturnType]):
                 f"[deep_sky_blue1]load memory[/deep_sky_blue1]: "
                 f"[orange3]{humanize.naturalsize(self._load_memory_increment)}"
             )
+
+        def get_all_dependencies_load_info(my_dict, my_model):
+            for model_name, model_dep in my_model.model_dependencies.models.items():
+                if model_name not in my_dict:
+                    my_dict[model_name] = {
+                        "time": model_dep._load_time,
+                        "memory": model_dep._load_memory_increment,
+                    }
+                    get_all_dependencies_load_info(my_dict, model_dep)
+
+        dependencies_load_info = {}
+        get_all_dependencies_load_info(dependencies_load_info, self)
+        load_time_including_dependencies = (self._load_time or 0) + sum(
+            [x["time"] or 0 for x in dependencies_load_info.values()]
+        )
+        sub_t = t.add(
+            "[deep_sky_blue1]load time including dependencies[/deep_sky_blue1]:"
+            + " [orange3]"
+            + humanize.naturaldelta(
+                load_time_including_dependencies, minimum_unit="seconds"
+            )
+        )
+        load_memory_increment_including_dependencies = (
+            self._load_memory_increment or 0
+        ) + sum([x["memory"] or 0 for x in dependencies_load_info.values()])
+        sub_t = t.add(
+            "[deep_sky_blue1]load memory including dependencies[/deep_sky_blue1]:"
+            + " [orange3]"
+            + humanize.naturalsize(load_memory_increment_including_dependencies)
+        )
+
         if self.model_dependencies.models:
             dep_t = t.add("[deep_sky_blue1]dependencies")
             for m in self.model_dependencies.models:
