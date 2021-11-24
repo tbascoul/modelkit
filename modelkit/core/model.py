@@ -318,7 +318,7 @@ class AbstractModel(Asset, Generic[ItemType, ReturnType]):
         dependencies_load_info = {}
         get_all_dependencies_load_info(dependencies_load_info, self)
         load_time_including_dependencies = (self._load_time or 0) + sum(
-            [x["time"] or 0 for x in dependencies_load_info.values()]
+            x["time"] or 0 for x in dependencies_load_info.values()
         )
         sub_t = t.add(
             "[deep_sky_blue1]load time including dependencies[/deep_sky_blue1]:"
@@ -329,7 +329,7 @@ class AbstractModel(Asset, Generic[ItemType, ReturnType]):
         )
         load_memory_increment_including_dependencies = (
             self._load_memory_increment or 0
-        ) + sum([x["memory"] or 0 for x in dependencies_load_info.values()])
+        ) + sum(x["memory"] or 0 for x in dependencies_load_info.values())
         sub_t = t.add(
             "[deep_sky_blue1]load memory including dependencies[/deep_sky_blue1]:"
             + " [orange3]"
